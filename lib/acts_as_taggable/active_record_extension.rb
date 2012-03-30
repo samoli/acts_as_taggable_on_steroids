@@ -1,4 +1,3 @@
-
 module ActsAsTaggable #:nodoc:
   module ActiveRecordExtension
     extend ActiveSupport::Concern    
@@ -139,6 +138,10 @@ module ActsAsTaggable #:nodoc:
         column_names.include?(cached_tag_list_column_name)
       end
       
+      def search_any_tags(tags)
+        joins(:tags).where(Tag.arel_table[:name].matches_any(tags.dup))
+      end
+      
       protected
         def joins_tags(options = {}) # :nodoc:
           options[:suffix] = "_#{options[:suffix]}" if options[:suffix]
@@ -165,10 +168,6 @@ module ActsAsTaggable #:nodoc:
           end
           
           records
-        end
-        
-        def search_any_tags(tags)
-          joins(:tags).where(Tag.arel_table[:name].matches_any(tags.dup))
         end
         
         def search_related_tags(tags)
